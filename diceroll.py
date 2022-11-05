@@ -5,7 +5,7 @@ Updated 8-16-2022
 By Erik Nykwest
 
 This is a passion project to aid my game design hobby.
-Proabilities are calculated DETERMINISTICALLY.
+Probabilities are calculated DETERMINISTICALLY.
 None of that lazy Monte Carlo non-sense.
 The primary tool in this script is the Dice class.
 For convenience, presets exist for Feng Shui style and FUDGE style dice.
@@ -14,6 +14,8 @@ ToDo
 - Code Exploding Dice
 - Addition of zero WAS broken, I think I fixed it, but I need to check it didn't break other things
 - Added the use of negative multipliers, I don't promise it works.
+- Change the .prob attribute to a @property
+    - What about "Other Statistics"?
 
 !!!WARNING!!!
 - Changed to git style version control
@@ -27,6 +29,7 @@ from itertools import product
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+from math import sqrt
 
 try:
     from math import comb # require Python >= 3.8
@@ -358,7 +361,24 @@ class Dice:
                 
         return P
     
+    
+    # Other Statistics
+    def avg(self):
+        return np.dot(self.freq, self.vals)/self.total
+    
+    def _avg_of_sq(self):
+        return np.dot(self.freq, self.vals**2)/self.total
+    
+    def _sq_avg(self):
+        return (np.dot(self.freq, self.vals)/self.total)**2
+    
+    def var(self):
+        return self._avg_of_sq() - self._sq_avg()
+    
+    def std(self):
+        return sqrt(self.var())
         
+    
 
 ### Functions
 def binomial_prob(n,k,p):
@@ -397,8 +417,7 @@ if __name__ == "__main__":
     a3d6.plot_prob()
     plt.show()
     
-    #d3 = Dice(3)
-    #d3.vals -= 2
-    #print(d3.vals)
+    print(d6.avg())
+    print(d6.std())
 
 
